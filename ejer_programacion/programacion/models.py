@@ -1,9 +1,13 @@
 
+
+
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 # Create your models here.
+
 
 
 class Conductor(models.Model): #
@@ -39,6 +43,22 @@ class Sede(models.Model):
 
     def __str__(self):
         return self.sede
+    
+ ## adicion clase Class Sede   
+
+class Class(models.Model):
+    class_nombre = models.CharField(max_length=30)
+    sede = models.ForeignKey(
+        Sede,
+        on_delete=models.CASCADE
+    )
+    class_usuario = models.CharField(max_length=30)
+    seccion = models.CharField(max_length=30)
+
+    def __str__(self):
+        return str(self.class_name)
+
+
 
 
 
