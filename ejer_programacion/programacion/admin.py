@@ -21,7 +21,7 @@ admin.site.index_title = 'Aplicativo'
 
 
 
-
+###clase con la que queria sacar ultimo usuario
 
 @admin.register(Sede)
 class SedeAdmin(admin.ModelAdmin):
@@ -29,7 +29,7 @@ class SedeAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         if change:
-            change_message = '{} - {} - {}'.format(obj.sede, obj.address, obj.tipo)
+            change_message = '{} - {} - {}- {}'.format(obj.sede, obj.tipo, obj.fecha_creado, obj.fecha_actualizado)
             LogEntry.objects.create(
                 user=request.user,
                 content_type=get_content_type_for_model(obj),
