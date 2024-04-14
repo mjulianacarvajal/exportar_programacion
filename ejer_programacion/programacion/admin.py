@@ -1,20 +1,21 @@
 from django.contrib import admin
+from django.contrib.admin.models import ADDITION, LogEntry
 from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.admin.models import LogEntry, ADDITION
-
-
+from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Conductor,Sede, Propietario,Encomienda,Vehiculo,Programacion,Class
+from import_export.admin import ImportExportModelAdmin
 
+from programacion.models import (
+    Class, Conductor, Encomienda, Programacion, Propietario,
+    Sede, Vehiculo
+)
 
 ### link del que tome el ejemplo https://ranvir.xyz/blog/django-admin-tips-and-tricks/#handling-history-model-logs-in-django-admin-panel
 
 # Register your models here.
 
-
-from import_export.admin import ImportExportModelAdmin
 
 admin.site.site_header = 'TITULO'
 admin.site.index_title = 'Aplicativo'
@@ -26,8 +27,11 @@ admin.site.index_title = 'Aplicativo'
 @admin.register(Sede)
 class SedeAdmin(admin.ModelAdmin):
 
+    # Aquí es donde está lo que necesitas pero debo aclarar que es mejor en un signal
+    # https://docs.djangoproject.com/en/5.0/topics/signals/
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
+
         if change:
             change_message = '{} - {} - {}- {}'.format(obj.sede, obj.tipo, obj.fecha_creado, obj.fecha_actualizado)
             LogEntry.objects.create(
@@ -38,6 +42,9 @@ class SedeAdmin(admin.ModelAdmin):
                 change_message=change_message,
                 object_repr=obj.__str__()[:200]
             )
+
+
+# Esto NO tiene utilidad.
 def link_function(field_name):
     def return_function(obj):
         obj_attr = getattr(obj, field_name)
@@ -52,6 +59,8 @@ def link_function(field_name):
     return_function.short_description = field_name
     return return_function
 
+
+# Esto no sirve para el propósito que tenías.
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
     readonly_fields = ('sede',)
@@ -69,8 +78,6 @@ class ClassAdmin(admin.ModelAdmin):
             # The function should return inners of a HTML anchor tag.
             setattr(self, 'main_new', link_function(field.name))
             self.readonly_fields += ('main_new',)
-    
-
 
 
 admin.site.register(Propietario)
@@ -78,13 +85,11 @@ admin.site.register(Conductor)
 admin.site.register(Vehiculo)
 
 
-
 @admin.register(Programacion)
 class ProgramacionAdmin(ImportExportModelAdmin):
     list_display = ('codigo', 'vehiculo','conductor','origen','destino','programacion','precio','estado', 'fecha_creado', "fecha_actualizado",)
     list_filter = ['codigo', 'vehiculo','conductor','origen','destino','programacion','precio','estado', 'fecha_creado', "fecha_actualizado",]
     search_fields = ['codigo']
-
 
 
 admin.site.register(Encomienda) 

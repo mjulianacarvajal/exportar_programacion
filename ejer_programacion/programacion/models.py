@@ -1,13 +1,8 @@
-
-
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
-
 
 # Create your models here.
-
 
 
 class Conductor(models.Model): #
@@ -43,8 +38,9 @@ class Sede(models.Model):
 
     def __str__(self):
         return self.sede
-    
- ## adicion clase Class Sede   
+
+
+## adicion clase Class Sede <-- Ignorar esto, no sirve.
 
 class Class(models.Model):
     class_nombre = models.CharField(max_length=30)
@@ -57,9 +53,6 @@ class Class(models.Model):
 
     def __str__(self):
         return str(self.class_name)
-
-
-
 
 
 class Vehiculo(models.Model):
@@ -98,6 +91,7 @@ class Programacion(models.Model):
     class Meta:
         verbose_name_plural = 'Programaciones'
 
+
 class Encomienda(models.Model):
     programacion = models.ForeignKey(Programacion, on_delete=models.CASCADE)
     nombre_envio = models.CharField(max_length=100)
@@ -114,3 +108,4 @@ class Encomienda(models.Model):
 
     def __str__(self):
         return f"Encomienda #: {self.id}, Enviada en {self.programacion}"
+
